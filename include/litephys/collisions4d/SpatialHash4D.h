@@ -1,5 +1,5 @@
 #pragma once
-#include "CollidableParticle4D.h"
+#include "../particles4d/PhysicsState4D.h"
 #include <vector>
 #include <unordered_map>
 #include <cstdint>
@@ -8,15 +8,15 @@ namespace Lite {
 
 struct SpatialHash4D {
     real cellSize;
-    std::unordered_map<uint64_t, std::vector<CollidableParticle4D*>> grid;
+    std::unordered_map<uint64_t, std::vector<PhysicsState4D*>> grid;
 
     SpatialHash4D(real cellSize) : cellSize(cellSize) {}
 
     uint64_t hashPosition(const Vector4& pos) const {
-        int x = (int)Math::real_floor(pos.x / cellSize);
-        int y = (int)Math::real_floor(pos.y / cellSize);
-        int z = (int)Math::real_floor(pos.z / cellSize);
-        int w = (int)Math::real_floor(pos.w / cellSize);
+        int x = (int)std::floor(pos.x / cellSize);
+        int y = (int)std::floor(pos.y / cellSize);
+        int z = (int)std::floor(pos.z / cellSize);
+        int w = (int)std::floor(pos.w / cellSize);
 
         uint64_t h1 = 0x8da6b343;
         uint64_t h2 = 0xd8163841;
@@ -31,18 +31,18 @@ struct SpatialHash4D {
         grid.clear();
     }
 
-    void insert(CollidableParticle4D* particle) {
-        uint64_t cellId = hashPosition(particle->getPosition());
-        grid[cellId].push_back(particle);
+    void insert(PhysicsState4D* state) {
+        uint64_t cellId = hashPosition(state->position);
+        grid[cellId].push_back(state);
     }
 
-    std::vector<CollidableParticle4D*> getNearby(const Vector4& pos) {
-        std::vector<CollidableParticle4D*> neighbors;
+    std::vector<PhysicsState4D*> getNearby(const Vector4& pos) {
+        std::vector<PhysicsState4D*> neighbors;
         
-        int px = (int)Math::real_floor(pos.x / cellSize);
-        int py = (int)Math::real_floor(pos.y / cellSize);
-        int pz = (int)Math::real_floor(pos.z / cellSize);
-        int pw = (int)Math::real_floor(pos.w / cellSize);
+        int px = (int)std::floor(pos.x / cellSize);
+        int py = (int)std::floor(pos.y / cellSize);
+        int pz = (int)std::floor(pos.z / cellSize);
+        int pw = (int)std::floor(pos.w / cellSize);
 
         for (int dw = -1; dw <= 1; ++dw) {
             for (int dz = -1; dz <= 1; ++dz) {

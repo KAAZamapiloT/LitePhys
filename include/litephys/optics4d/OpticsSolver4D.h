@@ -1,59 +1,55 @@
 #pragma once
-#include "Geometry3D.h"
+#include "Geometry4D.h"
 #include <vector>
 
 namespace Lite {
 
-struct Bounce3D {
-    Vector3 point;
-    Vector3 direction; 
+struct Bounce4D {
+    Vector4 point;
+    Vector4 direction;
     bool isRefraction;
 };
 
-class OpticsWorld3D {
-    std::vector<Shape3D*> shapes;
+class OpticsSolver4D {
+    std::vector<Shape4D*> shapes;
 
 public:
-    void addShape(Shape3D* shape) {
+    void addShape(Shape4D* shape) {
         shapes.push_back(shape);
     }
 
-    // Refract a vector using Snell's law
-    static Vector3 refract(const Vector3& I, const Vector3& N, real ior) {
+    static Vector4 refract(const Vector4& I, const Vector4& N, real ior) {
         real cosi = Math::real_abs(I.dot(N));
         real etai = 1.0f, etat = ior;
-        Vector3 n = N;
+        Vector4 n = N;
         if (I.dot(N) < 0) {
             cosi = -I.dot(N);
         } else {
-            // Inside the material, going out
             std::swap(etai, etat);
             n = N * -1.0f;
         }
         real eta = etai / etat;
         real k = 1.0f - eta * eta * (1.0f - cosi * cosi);
         if (k < 0.0f) {
-            // Total internal reflection
             return reflect(I, n);
         } else {
             return I * eta + n * (eta * cosi - Math::real_sqrt(k));
         }
     }
 
-    static Vector3 reflect(const Vector3& I, const Vector3& N) {
+    static Vector4 reflect(const Vector4& I, const Vector4& N) {
         return I - N * 2.0f * I.dot(N);
     }
 
-    // Trace a ray and return a path of bounces
-    std::vector<Bounce3D> traceRay(Ray3D ray, int maxBounces) const {
-        std::vector<Bounce3D> path;
+    std::vector<Bounce4D> traceRay(Ray4D ray, int maxBounces) const {
+        std::vector<Bounce4D> path;
         
         for (int b = 0; b < maxBounces; ++b) {
-            Intersection3D closest;
+            Intersection4D closest;
             closest.distance = std::numeric_limits<real>::max();
 
             for (auto* shape : shapes) {
-                Intersection3D hit = shape->intersect(ray);
+                Intersection4D hit = shape->intersect(ray);
                 if (hit.hit && hit.distance < closest.distance) {
                     closest = hit;
                 }
@@ -61,16 +57,13 @@ public:
 
             if (!closest.hit) break;
 
-            Bounce3D bounce;
+            Bounce4D bounce;
             bounce.point = closest.point;
-            
-            // Simplification: We will just refract always for transparent bodies
             bounce.direction = refract(ray.direction, closest.normal, closest.refractiveIndex);
             bounce.isRefraction = true;
             
             path.push_back(bounce);
             
-            // Setup next ray
             ray.origin = closest.point;
             ray.direction = bounce.direction;
         }

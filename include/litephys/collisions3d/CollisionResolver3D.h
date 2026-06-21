@@ -1,6 +1,7 @@
 #pragma once
-#include "CollidableParticle.h"
+#include "../particles3d/PhysicsState3D.h"
 #include "SpatialHash3D.h"
+#include <algorithm>
 
 namespace Lite {
 
@@ -11,27 +12,22 @@ enum class CollisionMode {
 
 class CollisionResolver3D {
 public:
-    CollisionMode mode;
-    real springStiffness;
-
-    CollisionResolver3D() : mode(CollisionMode::FAST_IMPULSE), springStiffness(500.0f) {}
-
-    void resolve(std::vector<CollidableParticle*>& particles, SpatialHash3D& spatialHash) {
+    static void resolve(std::vector<PhysicsState3D>& states, SpatialHash3D& spatialHash, CollisionMode mode = CollisionMode::FAST_IMPULSE, real springStiffness = 500.0f) {
         spatialHash.clear();
-        for (auto* p : particles) {
-            spatialHash.insert(p);
+        for (auto& state : states) {
+            spatialHash.insert(&state);
         }
 
-        for (auto* p1 : particles) {
-            std::vector<CollidableParticle*> neighbors = spatialHash.getNearby(p1->getPosition());
+        for (auto& stateA : states) {
+            std::vector<PhysicsState3D*> neighbors = spatialHash.getNearby(stateA.position);
 
-            for (auto* p2 : neighbors) {
-                if (p1 == p2) continue;
-                if (p1 > p2) continue; // Prevent double resolution
+            for (auto* stateB : neighbors) {
+                if (&stateA == stateB) continue;
+                if (&stateA > stateB) continue; // Prevent double resolution
 
-                Vector3 diff = p1->getPosition() - p2->getPosition();
+                Vector3 diff = stateA.position - stateB->position;
                 real distSq = diff.dot(diff);
-                real radiusSum = p1->radius + p2->radius;
+                real radiusSum = stateA.radius + stateB->radius;
 
                 if (distSq < radiusSum * radiusSum && distSq > 0.0001f) {
                     real dist = Math::real_sqrt(distSq);
@@ -39,32 +35,32 @@ public:
                     real penetration = radiusSum - dist;
 
                     if (mode == CollisionMode::FAST_IMPULSE) {
-                        real totalInverseMass = p1->getInverseMass() + p2->getInverseMass();
+                        real totalInverseMass = stateA.inverseMass + stateB->inverseMass;
                         if (totalInverseMass <= 0.0f) continue;
                         
                         // Positional correction
                         Vector3 correction = normal * (penetration / totalInverseMass);
-                        p1->setPosition(p1->getPosition() + correction * p1->getInverseMass());
-                        p2->setPosition(p2->getPosition() - correction * p2->getInverseMass());
+                        stateA.position += correction * stateA.inverseMass;
+                        stateB->position -= correction * stateB->inverseMass;
 
                         // Velocity impulse
-                        Vector3 relVel = p1->getVelocity() - p2->getVelocity();
+                        Vector3 relVel = stateA.velocity - stateB->velocity;
                         real velAlongNormal = relVel.dot(normal);
 
                         if (velAlongNormal > 0) continue;
 
-                        real e = std::min(p1->restitution, p2->restitution);
+                        real e = std::min(stateA.restitution, stateB->restitution);
                         real j = -(1.0f + e) * velAlongNormal;
                         j /= totalInverseMass;
 
                         Vector3 impulse = normal * j;
-                        p1->setVelocity(p1->getVelocity() + impulse * p1->getInverseMass());
-                        p2->setVelocity(p2->getVelocity() - impulse * p2->getInverseMass());
+                        stateA.velocity += impulse * stateA.inverseMass;
+                        stateB->velocity -= impulse * stateB->inverseMass;
                     } 
                     else if (mode == CollisionMode::STABLE_SPRING) {
                         Vector3 force = normal * (penetration * springStiffness);
-                        p1->addForce(force);
-                        p2->addForce(force * -1.0f);
+                        stateA.force += force;
+                        stateB->force -= force;
                     }
                 }
             }

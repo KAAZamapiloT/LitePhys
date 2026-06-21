@@ -6,7 +6,7 @@ using namespace Lite;
 int main() {
     std::cout << "LitePhys - 3D Optics Example" << std::endl;
 
-    OpticsWorld3D optics;
+    OpticsSolver3D optics;
     
     // Add a glass sphere
     Sphere3D sphere(Vector3(0, 0, 5), 2.0f);

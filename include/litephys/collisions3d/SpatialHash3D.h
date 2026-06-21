@@ -1,5 +1,5 @@
 #pragma once
-#include "CollidableParticle.h"
+#include "../particles3d/PhysicsState3D.h"
 #include <vector>
 #include <unordered_map>
 #include <cstdint>
@@ -8,14 +8,14 @@ namespace Lite {
 
 struct SpatialHash3D {
     real cellSize;
-    std::unordered_map<uint64_t, std::vector<CollidableParticle*>> grid;
+    std::unordered_map<uint64_t, std::vector<PhysicsState3D*>> grid;
 
     SpatialHash3D(real cellSize) : cellSize(cellSize) {}
 
     uint64_t hashPosition(const Vector3& pos) const {
-        int x = (int)Math::real_floor(pos.x / cellSize);
-        int y = (int)Math::real_floor(pos.y / cellSize);
-        int z = (int)Math::real_floor(pos.z / cellSize);
+        int x = (int)std::floor(pos.x / cellSize);
+        int y = (int)std::floor(pos.y / cellSize);
+        int z = (int)std::floor(pos.z / cellSize);
 
         uint64_t h1 = 0x8da6b343;
         uint64_t h2 = 0xd8163841;
@@ -29,17 +29,17 @@ struct SpatialHash3D {
         grid.clear();
     }
 
-    void insert(CollidableParticle* particle) {
-        uint64_t cellId = hashPosition(particle->getPosition());
-        grid[cellId].push_back(particle);
+    void insert(PhysicsState3D* state) {
+        uint64_t cellId = hashPosition(state->position);
+        grid[cellId].push_back(state);
     }
 
-    std::vector<CollidableParticle*> getNearby(const Vector3& pos) {
-        std::vector<CollidableParticle*> neighbors;
+    std::vector<PhysicsState3D*> getNearby(const Vector3& pos) {
+        std::vector<PhysicsState3D*> neighbors;
         
-        int px = (int)Math::real_floor(pos.x / cellSize);
-        int py = (int)Math::real_floor(pos.y / cellSize);
-        int pz = (int)Math::real_floor(pos.z / cellSize);
+        int px = (int)std::floor(pos.x / cellSize);
+        int py = (int)std::floor(pos.y / cellSize);
+        int pz = (int)std::floor(pos.z / cellSize);
 
         for (int dz = -1; dz <= 1; ++dz) {
             for (int dy = -1; dy <= 1; ++dy) {

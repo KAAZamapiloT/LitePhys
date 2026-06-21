@@ -6,7 +6,7 @@ using namespace Lite;
 int main() {
     std::cout << "LitePhys - 4D Optics Example" << std::endl;
 
-    OpticsWorld4D optics;
+    OpticsSolver4D optics;
     
     // Add a glass hyper-sphere
     HyperSphere4D hypersphere(Vector4(0, 0, 0, 5), 2.0f);
