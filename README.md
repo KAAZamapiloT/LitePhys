@@ -15,6 +15,7 @@ Most physics libraries force you to adopt their `World` managers, their memory a
 ## 🚀 Key Features
 - **Header-Only**: Just drop the `include/` directory into your project. Zero external dependencies.
 - **Stateless Integration**: Explicitly call semi-implicit Euler integrators during your engine's tick.
+- **Rigid Body Dynamics**: Full 3D rigid body components featuring Quaternions, 3x3 Inertia Tensors, and Manifold-based impulse collisions supporting off-center torque!
 - **Fast Broad-Phase Collisions**: O(N) Spatial Hashing grids capable of culling thousands of objects instantly.
 - **Stable Narrow-Phase Collisions**: Sphere-to-Sphere Velocity Impulse and Penalty Spring resolution.
 - **N-Dimensional Math**: Full Vector/Matrix math libraries for both 3D and 4D.
@@ -23,7 +24,8 @@ Most physics libraries force you to adopt their `World` managers, their memory a
 ## 📦 Architecture Overview
 You can cherry-pick exactly the math and logic you need using umbrella headers:
 - `#include <litephys/LitePhys3D.h>` - Math, Integration, and Force Solvers (Gravity, Springs)
-- `#include <litephys/LiteCollisions3D.h>` - Spatial Hashing and Collision Resolution
+- `#include <litephys/LiteRigidBody3D.h>` - Rigid Body State, Integration, and Manifold Collisions
+- `#include <litephys/LiteCollisions3D.h>` - Spatial Hashing and Particle Collision Resolution
 - `#include <litephys/LiteOptics3D.h>` - Raytracing, Reflections, and Refractions
 
 *(All of the above have a `4D` equivalent! Just replace `3D` with `4D` in the include paths).*
