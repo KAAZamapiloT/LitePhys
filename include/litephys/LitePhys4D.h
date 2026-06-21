@@ -1,0 +1,9 @@
+#pragma once
+#include "math/Precision.h"
+#include "math/Vector4.h"
+#include "math/Matrix4.h"
+#include "particles4d/Particle4D.h"
+#include "particles4d/ForceGenerator4D.h"
+#include "particles4d/Gravity4D.h"
+#include "particles4d/Spring4D.h"
+#include "particles4d/World4D.h"

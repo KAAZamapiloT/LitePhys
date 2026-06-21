@@ -1,0 +1,80 @@
+#pragma once
+#include "Vector4.h"
+
+namespace Lite {
+
+// Simple 4x4 Matrix for 4D space transformations
+struct Matrix4 {
+    real data[16];
+
+    Matrix4() {
+        for (int i=0; i<16; ++i) data[i] = 0;
+        data[0] = data[5] = data[10] = data[15] = 1.0f; // Identity
+    }
+
+    Vector4 transform(const Vector4& vector) const {
+        return Vector4(
+            vector.x * data[0] + vector.y * data[4] + vector.z * data[8] + vector.w * data[12],
+            vector.x * data[1] + vector.y * data[5] + vector.z * data[9] + vector.w * data[13],
+            vector.x * data[2] + vector.y * data[6] + vector.z * data[10] + vector.w * data[14],
+            vector.x * data[3] + vector.y * data[7] + vector.z * data[11] + vector.w * data[15]
+        );
+    }
+
+    // Generate a rotation matrix for a specific 4D plane
+    static Matrix4 makeRotationXY(real angle) {
+        Matrix4 m;
+        real c = Math::real_cos(angle);
+        real s = Math::real_sin(angle);
+        m.data[0] = c; m.data[4] = -s;
+        m.data[1] = s; m.data[5] = c;
+        return m;
+    }
+
+    static Matrix4 makeRotationXZ(real angle) {
+        Matrix4 m;
+        real c = Math::real_cos(angle);
+        real s = Math::real_sin(angle);
+        m.data[0] = c; m.data[8] = -s;
+        m.data[2] = s; m.data[10] = c;
+        return m;
+    }
+
+    static Matrix4 makeRotationXW(real angle) {
+        Matrix4 m;
+        real c = Math::real_cos(angle);
+        real s = Math::real_sin(angle);
+        m.data[0] = c; m.data[12] = -s;
+        m.data[3] = s; m.data[15] = c;
+        return m;
+    }
+
+    static Matrix4 makeRotationYZ(real angle) {
+        Matrix4 m;
+        real c = Math::real_cos(angle);
+        real s = Math::real_sin(angle);
+        m.data[5] = c; m.data[9] = -s;
+        m.data[6] = s; m.data[10] = c;
+        return m;
+    }
+
+    static Matrix4 makeRotationYW(real angle) {
+        Matrix4 m;
+        real c = Math::real_cos(angle);
+        real s = Math::real_sin(angle);
+        m.data[5] = c; m.data[13] = -s;
+        m.data[7] = s; m.data[15] = c;
+        return m;
+    }
+
+    static Matrix4 makeRotationZW(real angle) {
+        Matrix4 m;
+        real c = Math::real_cos(angle);
+        real s = Math::real_sin(angle);
+        m.data[10] = c; m.data[14] = -s;
+        m.data[11] = s; m.data[15] = c;
+        return m;
+    }
+};
+
+} // namespace Lite
