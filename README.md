@@ -1,96 +1,86 @@
-# LitePhys
+<div align="center">
+  <img src="assets/logo.png" alt="LitePhys Logo" width="300">
 
-![LitePhys Logo](docs/logo.png)
+  <h1>LitePhys</h1>
+  <p>A lightweight, stateless, Entity-Component-System (ECS) friendly physics and optics provider for C++ game engines. Supports seamless 3D and 4D mathematical physics.</p>
+</div>
 
-A feather-light, header-only C++ physics library designed to be easily hooked into existing game engines. 
-LitePhys is intentionally kept minimal—it is a *helper*, not a full game engine. It provides the core mathematics and integration steps for physics simulations, leaving collision resolution and rendering to the user.
+---
 
-## Features
-- **Header-Only**: Just drop the `include/litephys` folder into your project.
-- **Dependency-Free**: Includes custom math implementations.
-- **True Modularity**: Only include what you need. 3D and 4D physics are completely separate modules.
-- **Light Physics (Optics)**: Full raycasting system for both 3D and 4D environments with refraction (Snell's Law) and reflection calculations!
-- **Tweakable Engine Hooks**: Easily implement custom constraints, bounds checking, or collisions via `postUpdateHook`.
+## 🌟 Philosophy: A Provider, Not An Engine
+Most physics libraries force you to adopt their `World` managers, their memory allocators, and their update loops. 
 
-## Modular Includes
-LitePhys is split into independent modules. Use umbrella headers to pull in the features you want without bloating your project:
+**LitePhys is different.** It is designed as a *Stateless Physics Provider*. It provides pure Data Structures (`structs`) and Static Functions (`solvers`). Your Game Engine retains 100% control over the game loop, the ECS architecture, and memory management.
+
+## 🚀 Key Features
+- **Header-Only**: Just drop the `include/` directory into your project. Zero external dependencies.
+- **Stateless Integration**: Explicitly call semi-implicit Euler integrators during your engine's tick.
+- **Fast Broad-Phase Collisions**: O(N) Spatial Hashing grids capable of culling thousands of objects instantly.
+- **Stable Narrow-Phase Collisions**: Sphere-to-Sphere Velocity Impulse and Penalty Spring resolution.
+- **N-Dimensional Math**: Full Vector/Matrix math libraries for both 3D and 4D.
+- **Geometric Optics**: Snell's law refraction and raytracing through 3D/4D Hyper-Spheres and Hyper-Planes.
+
+## 📦 Architecture Overview
+You can cherry-pick exactly the math and logic you need using umbrella headers:
+- `#include <litephys/LitePhys3D.h>` - Math, Integration, and Force Solvers (Gravity, Springs)
+- `#include <litephys/LiteCollisions3D.h>` - Spatial Hashing and Collision Resolution
+- `#include <litephys/LiteOptics3D.h>` - Raytracing, Reflections, and Refractions
+
+*(All of the above have a `4D` equivalent! Just replace `3D` with `4D` in the include paths).*
+
+## 🛠️ Quick Start (ECS Example)
+
+Here is a simplified example of how you can use LitePhys directly within your own engine's update loop without surrendering control:
 
 ```cpp
-// For standard 3D Particle physics:
+#include <vector>
 #include <litephys/LitePhys3D.h>
+#include <litephys/LiteCollisions3D.h>
 
-// For 3D Raycasting and Optics:
-#include <litephys/LiteOptics3D.h>
+// Your game engine's custom ECS component
+struct MyEntity {
+    Lite::PhysicsState3D physics;
+    // ... custom graphics and game logic data
+};
 
-// For 4D Physics / Hyper-dimensional logic:
-#include <litephys/LitePhys4D.h>
-#include <litephys/LiteOptics4D.h>
-```
+void EngineUpdate(std::vector<MyEntity>& entities, float dt) {
+    Lite::SpatialHash3D spatialHash(2.0f);
+    Lite::Vector3 gravity(0, -9.8f, 0);
 
-## Precision Configuration
-By default, LitePhys uses `float` for all calculations. You can change this by defining macros before including `LitePhys.h`:
-
-```cpp
-// For high precision mode (uses long double):
-#define LITE_PHYSICS_DOUBLE_PRECISION
-
-// For fast approximate math (e.g. Quake 3 fast inverse square root):
-#define LITE_PHYSICS_APPROX_MATH
-
-#include <litephys/LitePhys.h>
-```
-
-## Quick Start Example
-Here's a minimal example of simulating a particle falling under gravity and bouncing on a floor.
-
-```cpp
-#include <iostream>
-#include <litephys/LitePhys.h>
-
-using namespace Lite;
-
-// Tweakable hook to handle a simple floor collision
-void checkBounds(Particle* p, real duration) {
-    if (p->getPosition().y < 0.0f) {
-        Vector3 pos = p->getPosition();
-        pos.y = 0.0f;
-        p->setPosition(pos);
-
-        Vector3 vel = p->getVelocity();
-        vel.y = -vel.y * 0.8f; // 0.8 is the bounciness
-        p->setVelocity(vel);
-    }
-}
-
-int main() {
-    ParticleWorld world;
-    world.setPostUpdateHook(checkBounds);
-
-    Particle p1;
-    p1.setPosition(0, 10, 0); // Start at height 10
-    p1.setMass(2.0f);
-    world.addParticle(&p1);
-
-    ParticleGravity gravity(Vector3(0, -9.81f, 0));
-    world.getForceRegistry().add(&p1, &gravity);
-
-    // Simulate loop
-    const real dt = 0.016f; // ~60fps
-    for (int i = 0; i < 600; ++i) {
-        world.startFrame();
-        world.runPhysics(dt);
-        // ... render p1.getPosition() ...
+    // 1. Integration Phase (Your Engine controls the loop!)
+    for (auto& entity : entities) {
+        Lite::ForceSolver3D::applyGravity(entity.physics, gravity);
+        Lite::Integrator3D::integrate(entity.physics, dt);
     }
 
-    return 0;
+    // 2. Collision Phase
+    // Extract state references for the stateless solver
+    std::vector<Lite::PhysicsState3D> states; 
+    for (auto& e : entities) states.push_back(e.physics);
+    
+    // Resolve collisions via Spatial Hashing
+    Lite::CollisionResolver3D::resolve(states, spatialHash, Lite::CollisionMode::FAST_IMPULSE);
+    
+    // Sync back to ECS
+    for (size_t i = 0; i < entities.size(); ++i) {
+        entities[i].physics = states[i];
+    }
 }
 ```
 
-## Building the Examples
+## 🧪 Examples
+Check out the `examples/` directory for full implementations:
+- `example_gravity.cpp` & `example_gravity_4d.cpp`: Demonstrates basic force application and integration.
+- `example_collisions_3d.cpp` & `example_collisions_4d.cpp`: Demonstrates resolving thousands of high-speed collisions using the Spatial Hash.
+- `example_optics_3d.cpp` & `example_optics_4d.cpp`: Demonstrates tracing rays through glass and water volumes with physically accurate refractions.
+
+To build the examples:
 ```bash
 mkdir build
 cd build
 cmake ..
 cmake --build .
-./example_gravity
 ```
+
+## 📝 License
+MIT License. Free for use in any personal or commercial game engine.
