@@ -70,6 +70,9 @@ public:
     }
     Vector4 getAcceleration() const { return acceleration; }
 
+    void setInverseMass(real inverseMass) { this->inverseMass = inverseMass; }
+    real getInverseMass() const { return inverseMass; }
+
     void clearAccumulator() { forceAccum.clear(); }
     void addForce(const Vector4& force) { forceAccum += force; }
 };
