@@ -17,3 +17,12 @@ add_executable(example_collisions_3d examples/example_collisions_3d.cpp)
 add_executable(example_collisions_4d examples/example_collisions_4d.cpp)
 add_executable(example_rigidbody_3d examples/example_rigidbody_3d.cpp)
 target_include_directories(example_rigidbody_3d PRIVATE include)
+
+add_executable(example_rigidbody_4d examples/example_rigidbody_4d.cpp)
+target_include_directories(example_rigidbody_4d PRIVATE include)
+
+add_executable(example_softbody_3d examples/example_softbody_3d.cpp)
+target_include_directories(example_softbody_3d PRIVATE include)
+
+add_executable(example_softbody_4d examples/example_softbody_4d.cpp)
+target_include_directories(example_softbody_4d PRIVATE include)

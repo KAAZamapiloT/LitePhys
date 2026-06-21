@@ -15,7 +15,8 @@ Most physics libraries force you to adopt their `World` managers, their memory a
 ## 🚀 Key Features
 - **Header-Only**: Just drop the `include/` directory into your project. Zero external dependencies.
 - **Stateless Integration**: Explicitly call semi-implicit Euler integrators during your engine's tick.
-- **Rigid Body Dynamics**: Full 3D rigid body components featuring Quaternions, 3x3 Inertia Tensors, and Manifold-based impulse collisions supporting off-center torque!
+- **Rigid Body Dynamics**: Full 3D and 4D rigid body components featuring Quaternions/Orientation Matrices, Inertia Tensors, and Manifold-based impulse collisions supporting off-center torque!
+- **Soft Body Dynamics**: Mass-Spring lattice models for 3D and 4D jello-like soft bodies with structural and shear constraints.
 - **Fast Broad-Phase Collisions**: O(N) Spatial Hashing grids capable of culling thousands of objects instantly.
 - **Stable Narrow-Phase Collisions**: Sphere-to-Sphere Velocity Impulse and Penalty Spring resolution.
 - **N-Dimensional Math**: Full Vector/Matrix math libraries for both 3D and 4D.
