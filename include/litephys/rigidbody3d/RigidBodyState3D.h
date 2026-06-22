@@ -49,6 +49,20 @@ struct RigidBodyState3D {
         );
         setInertiaTensor(tensor);
     }
+
+    // For boxes
+    void setBoxInertia(const Vector3& halfExtents) {
+        real dx = halfExtents.x * 2.0f;
+        real dy = halfExtents.y * 2.0f;
+        real dz = halfExtents.z * 2.0f;
+        real factor = (1.0f / 12.0f) * mass;
+        Matrix3 tensor(
+            factor * (dy*dy + dz*dz), 0, 0,
+            0, factor * (dx*dx + dz*dz), 0,
+            0, 0, factor * (dx*dx + dy*dy)
+        );
+        setInertiaTensor(tensor);
+    }
 };
 
 } // namespace Lite

@@ -13,6 +13,16 @@ public:
     Quaternion() : r(1), i(0), j(0), k(0) {}
     Quaternion(real r, real i, real j, real k) : r(r), i(i), j(j), k(k) {}
 
+    static Quaternion fromAxisAngle(const Vector3& axis, real angle) {
+        real halfAngle = angle * 0.5f;
+        real s = std::sin(halfAngle);
+        return Quaternion(std::cos(halfAngle), axis.x * s, axis.y * s, axis.z * s);
+    }
+
+    Quaternion operator*(real scalar) const {
+        return Quaternion(r * scalar, i * scalar, j * scalar, k * scalar);
+    }
+
     void normalize() {
         real d = r*r + i*i + j*j + k*k;
         if (d == 0) {
@@ -32,6 +42,13 @@ public:
         q.j = r*multiplier.j + j*multiplier.r + k*multiplier.i - i*multiplier.k;
         q.k = r*multiplier.k + k*multiplier.r + i*multiplier.j - j*multiplier.i;
         return q;
+    }
+
+    void operator+=(const Quaternion& q) {
+        r += q.r;
+        i += q.i;
+        j += q.j;
+        k += q.k;
     }
 
     void addScaledVector(const Vector3& vector, real scale) {

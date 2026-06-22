@@ -33,3 +33,15 @@ target_include_directories(example_softbody_4d PRIVATE include)
 
 add_executable(example_multithreaded_100k examples/example_multithreaded_100k.cpp)
 target_include_directories(example_multithreaded_100k PRIVATE include)
+
+add_executable(example_gjk_3d examples/example_gjk_3d.cpp)
+target_include_directories(example_gjk_3d PRIVATE include)
+
+add_executable(example_gjk_4d examples/example_gjk_4d.cpp)
+target_include_directories(example_gjk_4d PRIVATE include)
+
+add_executable(example_bvh_ccd examples/example_bvh_ccd.cpp)
+target_include_directories(example_bvh_ccd PRIVATE include)
+
+add_executable(example_vehicle_3d examples/example_vehicle_3d.cpp)
+target_include_directories(example_vehicle_3d PRIVATE include)
