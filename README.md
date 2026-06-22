@@ -17,6 +17,7 @@ Most physics libraries force you to adopt their `World` managers, their memory a
 - **Stateless Integration**: Explicitly call semi-implicit Euler integrators during your engine's tick.
 - **Rigid Body Dynamics**: Full 3D and 4D rigid body components featuring Quaternions/Orientation Matrices, Inertia Tensors, and Manifold-based impulse collisions supporting off-center torque!
 - **Soft Body Dynamics**: Mass-Spring lattice models for 3D and 4D jello-like soft bodies with structural and shear constraints.
+- **Multithreading (C++23)**: `std::execution::par_unseq` parallel solvers. Successfully stress-tested at real-time speeds with **100,000 bodies** via optional lock-free collision synchronization.
 - **Fast Broad-Phase Collisions**: O(N) Spatial Hashing grids capable of culling thousands of objects instantly.
 - **Stable Narrow-Phase Collisions**: Sphere-to-Sphere Velocity Impulse and Penalty Spring resolution.
 - **N-Dimensional Math**: Full Vector/Matrix math libraries for both 3D and 4D.
@@ -73,16 +74,32 @@ void EngineUpdate(std::vector<MyEntity>& entities, float dt) {
 
 ## 🧪 Examples
 Check out the `examples/` directory for full implementations:
-- `example_gravity.cpp` & `example_gravity_4d.cpp`: Demonstrates basic force application and integration.
-- `example_collisions_3d.cpp` & `example_collisions_4d.cpp`: Demonstrates resolving thousands of high-speed collisions using the Spatial Hash.
-- `example_optics_3d.cpp` & `example_optics_4d.cpp`: Demonstrates tracing rays through glass and water volumes with physically accurate refractions.
+- `example_gravity` & `example_gravity_4d`: Demonstrates basic force application and integration.
+- `example_collisions_3d` & `example_collisions_4d`: Demonstrates resolving thousands of high-speed collisions using the Spatial Hash.
+- `example_rigidbody_3d` & `example_rigidbody_4d`: Demonstrates full rigid body mechanics with off-center impulses generating angular spin.
+- `example_softbody_3d` & `example_softbody_4d`: Demonstrates dropping Mass-Spring jello cubes/tesseracts onto a floor.
+- `example_optics_3d` & `example_optics_4d`: Demonstrates tracing rays through glass and water volumes with physically accurate refractions.
 
-To build the examples:
+### How to Build and Run Examples
+To build all of the examples, run the following commands from the project root:
+
 ```bash
 mkdir build
 cd build
 cmake ..
 cmake --build .
+```
+
+After the build completes, the executables will be located in the `build/Debug/` (or `build/Release/` depending on your generator) directory.
+
+To run an example on Windows:
+```bash
+.\Debug\example_rigidbody_3d.exe
+```
+
+To run an example on Linux/macOS:
+```bash
+./example_rigidbody_3d
 ```
 
 ## 📝 License

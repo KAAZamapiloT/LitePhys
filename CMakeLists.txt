@@ -1,7 +1,11 @@
 cmake_minimum_required(VERSION 3.10)
 project(LitePhys)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+find_package(Threads REQUIRED)
+link_libraries(Threads::Threads)
 
 # Add include directory for the library
 include_directories(include)
@@ -26,3 +30,6 @@ target_include_directories(example_softbody_3d PRIVATE include)
 
 add_executable(example_softbody_4d examples/example_softbody_4d.cpp)
 target_include_directories(example_softbody_4d PRIVATE include)
+
+add_executable(example_multithreaded_100k examples/example_multithreaded_100k.cpp)
+target_include_directories(example_multithreaded_100k PRIVATE include)
