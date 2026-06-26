@@ -19,6 +19,8 @@ Most physics libraries force you to adopt their `World` managers, their memory a
 - **Bounding Volume Hierarchies (BVH)**: Fast 3D and 4D spatial culling trees supporting both static array-rebuilds and dynamic updates for O(log N) raycasting.
 - **Continuous Collision Detection (CCD)**: Time-of-Impact (TOI) sweeping via GJK Conservative Advancement to mathematically guarantee fast-moving objects never tunnel through walls.
 - **Vehicle Physics**: A dedicated Raycast Vehicle Controller for 3D racing games, simulating spring-damper suspension, longitudinal engine impulses, and lateral tire slip.
+- **Destruction & Explosions**: Real-time fracturing system that mathematically shatters primitives while perfectly conserving mass and momentum, paired with a BVH-accelerated explosive radial force generator.
+- **Skeletons & Kinematics**: Complete hierarchy system supporting fast Forward Kinematics (FK), bone-relative Sockets, and highly optimized FABRIK Inverse Kinematics (IK) for procedural animation!
 - **Stateless Integration**: Explicitly call semi-implicit Euler integrators during your engine's tick.
 - **Rigid Body Dynamics**: Full 3D and 4D rigid body components featuring Quaternions/Orientation Matrices, Inertia Tensors, and Manifold-based impulse collisions supporting off-center torque!
 - **Soft Body Dynamics**: Mass-Spring lattice models for 3D and 4D jello-like soft bodies with structural and shear constraints.

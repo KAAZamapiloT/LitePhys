@@ -45,3 +45,9 @@ target_include_directories(example_bvh_ccd PRIVATE include)
 
 add_executable(example_vehicle_3d examples/example_vehicle_3d.cpp)
 target_include_directories(example_vehicle_3d PRIVATE include)
+
+add_executable(example_destruction_3d examples/example_destruction_3d.cpp)
+target_include_directories(example_destruction_3d PRIVATE include)
+
+add_executable(example_kinematics_3d examples/example_kinematics_3d.cpp)
+target_include_directories(example_kinematics_3d PRIVATE include)
