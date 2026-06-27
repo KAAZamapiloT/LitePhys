@@ -123,7 +123,7 @@ public:
 
         // We should trigger a full FK cascade starting from the root to ensure everything is perfectly aligned
         // (especially the end effector and sockets)
-        skeleton.computeFK();
+        // skeleton.computeFK(); // Removed so the caller can specify root position/rotation
     }
 };
 
